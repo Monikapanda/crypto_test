@@ -1,22 +1,19 @@
 {
-  "name": "qa-crypto-test",
+  "name": "crypto_test",
   "version": "1.0.0",
   "description": "",
-  "main": "UIFiltertestBDD.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "cucumber": "^6.0.7"
-  },
   "dependencies": {
     "@cucumber/cucumber": "^9.1.2",
     "assert": "^2.0.0",
-    "chromedriver": "^113.0.0",
-    "geckodriver": "^3.2.0",
+    "axios": "^1.4.0",
+    "pandas-js": "^0.2.4",
     "selenium-webdriver": "^4.9.2"
   }
 }
