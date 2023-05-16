@@ -1,20 +1,21 @@
 const axios = require('axios');
+var CONFIG = require('./config.json');
+
+var apikey = CONFIG.apikey;
 
 let response = null;
 new Promise(async (resolve, reject) => {
   try {
     response = await axios.get('https://pro-api.coinmarketcap.com/v2/tools/price-conversion?convert_id=2791&amount=10000000&id=3541', {
       headers: {
-        'X-CMC_PRO_API_KEY': '1856fe81-aacb-4097-8c0b-22fc61313f48',
+        'X-CMC_PRO_API_KEY': apikey,
       },
-      parameters: {
-        'convert_id':'2791',
-        'amount':'10000000',
-        'id':'3541'
-      }
+      
+        'convert_id':2791,
+        'amount':10000000,
+        'id':3541
+      
     });
-    //dogeswap(conver-id): 1458
-    //pound(id): 2791
   } catch(ex) {
     response = null;
     // error
@@ -24,13 +25,10 @@ new Promise(async (resolve, reject) => {
   if (response) {
     // success
     const results = response.data;
-    //console.log(results.data); 
     status_code = response.status;
     console.log(status_code);
     if (status_code == 200) {
       console.log('success');
-      // console.log(results.data); 
-      // print the price in json data 
       if (results.data.quote == null) {
         console.log('unable to get data');
       }
@@ -58,7 +56,7 @@ new Promise(async (resolve, reject) => {
         'id':'2791'
       }
     });
-    //dogeswap(conver-id): 1458
+    //dogeswap(convert-id): 1458
     //pound(id): 2791
   } catch(ex) {
     response2 = null;
@@ -73,8 +71,6 @@ new Promise(async (resolve, reject) => {
     console.log(status_code);
     if (status_code == 200) {
       console.log('success');
-      // console.log(results.data); 
-      // find lenght of json data
       length = Object.keys(results.data.quote).length;
       if (length == 0) {
         console.log('unable to get data');

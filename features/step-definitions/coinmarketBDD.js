@@ -1,23 +1,29 @@
 const { Builder, By, until } = require('selenium-webdriver');
+const chrome = require('selenium-webdriver/chrome');
 const assert = require('assert');
 const fs = require('fs');
-// const { DataFrame } = require('pandas-js');
-
 const { Given, When, Then, AfterAll } = require('@cucumber/cucumber');
+
+const { setDefaultTimeout } = require('@cucumber/cucumber');
+setDefaultTimeout(parseInt(process.env.DEFAULT_TIMEOUT) || 60000);
 
 let driver;
 
-Given('I am on the CoinMarketCap homepage', async function() {
+Given('I am on the page {string}', async function(webpage) {
+    // Set Chrome options
+    const options = new chrome.Options();
+    options.addArguments('--headless');
+    options.addArguments("--window-size=1920,1080");
+    options.addArguments("--start-maximized");
    // Set up the Selenium WebDriver
-   driver = await new Builder().forBrowser('chrome').build();
+   driver = await new Builder().forBrowser('chrome').setChromeOptions(options).build();
 
    // Navigate to the homepage
-   await driver.get('https://coinmarketcap.com/');
-  return 'success';
+   await driver.get(webpage);
+   return 'success';
 });
 
 Then('the page title should be {string}', async function(expectedTitle) {
-  // Use the Mocha.js framework to check the page title
   await driver.wait(until.titleIs(expectedTitle), 5000);
   const actualTitle = await driver.getTitle();
   assert.strictEqual(actualTitle, expectedTitle, 'Page title does not match expected title');
@@ -26,7 +32,6 @@ Then('the page title should be {string}', async function(expectedTitle) {
 
 // click on "show rows" dropdown and select 20 rows
 When('I select {int} rows', async function(rows) {
-    // maximise the window
     await driver.manage().window().maximize();
     //wait for the page to load
     await driver.sleep(1000);
@@ -59,10 +64,10 @@ var review = {
     marketcap: ""
     };
 
-
 // Extract and display the data from each row
 for (let row of rows) {
-  let columns = await row.findElements(By.css('tbody td'));
+//   await driver.sleep(1000);
+//   console.log(row.getText());
   rowData = [];
   review = {
     rank: "",
@@ -70,12 +75,24 @@ for (let row of rows) {
     price: "",
     marketcap: ""
     };
+    
+    // try {
+    //     let columns = await row.findElements(By.css('tbody td'));
+    //     for (let column of columns) {
+    //         let text = await column.getText();
+    //         rowData.push(text);
+    //       }
+    //     // perform actions on the element
+    //     } catch (StaleElementReferenceException) {
+    //         console.log("StaleElementReferenceException");
+    //     }
+        let columns = await row.findElements(By.css('tbody td'));
+        for (let column of columns) {
+            let text = await column.getText();
+            rowData.push(text);
+          }
   
 
-  for (let column of columns) {
-    let text = await column.getText();
-    rowData.push(text);
-  }
     review.rank = rowData[1];
     review.name = rowData[2];
     review.price = rowData[3];
@@ -92,21 +109,17 @@ for (let row of rows) {
             throw error;
         }
     });
-
-//   console.log(finalData);
 }
-// console.log(filtedata);
 return 'success';
-}
-);
+});
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
 When('I filter by algorithm and select {string}', async function(fitercondition) {
-    // Click on the "Filter" button
-    // move the mouse to the centre of the screen
+    
+    // move the mouse to centre of the page
     await driver.actions().move({x: 0, y: 0}).perform();
-
+    // Click on the "Filter" button
     const filterButton = await driver.findElement(By.xpath('//*[@id="__next"]/div/div[1]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div[2]/div[2]/button[1]'));
     await filterButton.click(); 
     await driver.sleep(1000);
@@ -169,9 +182,6 @@ When('I select price and set minimum value to {int} and maximum to {int}', async
 
 });
 
-
-
-
 Then('I print the filtered table', async function() {
 
 await driver.wait(until.elementLocated(By.xpath('//*[@id="__next"]/div/div[1]/div[2]/div/div[1]/div[4]/table')), 5000);
@@ -211,10 +221,7 @@ for (let row of rows) {
             throw error;
         }
     });
-
-//   console.log(finalData);
 }
-// console.log(filtedata);
 return 'success';
 }
 );
@@ -227,11 +234,9 @@ When('I match the filtered data with unfiltered data', async function() {
     const filecontents = await fs.promises.readFile('filtered_data.json', 'utf8');
     // get data from filtered_data.json
     const filteredData = JSON.parse(filecontents);
-    //console.log(filteredData);
     // get data from unfiltered_data.json
     const filecontents2 = await fs.promises.readFile('unfiltered_data.json', 'utf8');
     const unfilteredData = JSON.parse(filecontents2);
-    //console.log(unfilteredData);
 
     // compare the data
     var i = 0;
@@ -263,7 +268,7 @@ Then('I print the results', async function() {
 });
 
 
-// AfterAll(async function() {
-//     // Quit the WebDriver after the tests have finished running
-//     await driver.quit();
-// });
+AfterAll(async function() {
+    // Quit the WebDriver after the tests have finished running
+    await driver.quit();
+});
