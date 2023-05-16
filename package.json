@@ -13,6 +13,7 @@
     "@cucumber/cucumber": "^9.1.2",
     "assert": "^2.0.0",
     "axios": "^1.4.0",
+    "chromedriver": "^113.0.0",
     "pandas-js": "^0.2.4",
     "selenium-webdriver": "^4.9.2"
   }

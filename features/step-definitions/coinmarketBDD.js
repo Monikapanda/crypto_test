@@ -47,6 +47,8 @@ When('I select {int} rows', async function(rows) {
     });
 
 Then('I print the table', async function() {
+//wait for 2 seconds
+await driver.sleep(2000);
 // Wait for the table to load
 await driver.wait(until.elementLocated(By.xpath('//*[@id="__next"]/div/div[1]/div[2]/div/div[1]/div[4]/table')), 5000);
 
@@ -75,24 +77,13 @@ for (let row of rows) {
     price: "",
     marketcap: ""
     };
-    
-    // try {
-    //     let columns = await row.findElements(By.css('tbody td'));
-    //     for (let column of columns) {
-    //         let text = await column.getText();
-    //         rowData.push(text);
-    //       }
-    //     // perform actions on the element
-    //     } catch (StaleElementReferenceException) {
-    //         console.log("StaleElementReferenceException");
-    //     }
+
         let columns = await row.findElements(By.css('tbody td'));
         for (let column of columns) {
             let text = await column.getText();
             rowData.push(text);
           }
   
-
     review.rank = rowData[1];
     review.name = rowData[2];
     review.price = rowData[3];
@@ -179,11 +170,12 @@ When('I select price and set minimum value to {int} and maximum to {int}', async
     // click on the "Show results" button
     const showResultsButton = await driver.findElement(By.xpath('//*[@id="__next"]/div/div[1]/div[2]/div/div[1]/div[5]/div/div/div[2]/div[2]/button[1]'));
     await showResultsButton.click();
-
 });
 
 Then('I print the filtered table', async function() {
 
+//wait for 2 seconds
+await driver.sleep(2000);    
 await driver.wait(until.elementLocated(By.xpath('//*[@id="__next"]/div/div[1]/div[2]/div/div[1]/div[4]/table')), 5000);
 
 // Find the table element
@@ -261,9 +253,8 @@ Then('I print the results', async function() {
         console.log(finalData);
     }
     else {
-        console.log("Data does not match");
+        console.log("/nThe filtered data is not present in the top 20 of the unfiltered data");
     }
-
     return 'success';
 });
 
